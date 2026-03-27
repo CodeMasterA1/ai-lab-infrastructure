@@ -1,0 +1,139 @@
+---
+  # Cloud Architecture — AI Lab Infrastructure
+
+  **Owner:** Andres
+  **Last updated:** 2026-03-27
+  **Provider:** Hetzner Cloud (Helsinki, Finland)
+
+  ---
+
+  ## Service Model: IaaS (Infrastructure as a Service)
+
+  This infrastructure runs on a **Hetzner CX23 virtual machine** — a classic example of IaaS.
+
+  | What Hetzner provides | What I manage |
+  |---|---|
+  | Physical servers | Operating system (Ubuntu 24.04) |
+  | Network hardware | All software and services |
+  | Power and cooling | Security configuration |
+  | Hypervisor | Data and backups |
+
+  This is the **Shared Responsibility Model** in practice: the cloud provider owns the hardware layer, the customer owns everything above it.
+
+  ---
+
+  ## Infrastructure Specs
+
+  | Resource | Value |
+  |---|---|
+  | Type | Virtual Machine (VM) |
+  | vCPU | 2 |
+  | RAM | 4 GB |
+  | Storage | 40 GB NVMe SSD |
+  | Location | Helsinki, Finland (EU-North region) |
+  | Monthly cost | ~AUD 7 / EUR 4.19 |
+  | Uptime | 99.9% (monitored via Uptime Kuma) |
+
+  **Cloud economics:** Paying ~AUD 7/month (OpEx) instead of buying a physical server for AUD 500+ (CapEx). No depreciation, no hardware maintenance, scale up/down on demand.
+
+  ---
+
+  ## Services Running (Containerized)
+
+  All services run in **Docker containers** — the industry standard for portable, isolated deployments.
+
+  | Service | Role | Cloud Equivalent |
+  |---|---|---|
+  | n8n | Workflow automation / iPaaS | AWS Step Functions + Lambda |
+  | PostgreSQL 16 | Relational database | AWS RDS |
+  | Nginx Proxy Manager | Reverse proxy + SSL termination | AWS ALB (Application Load Balancer) |
+  | Tailscale | Mesh VPN / private network | AWS VPC (Virtual Private Cloud) |
+  | Pi-hole | DNS filtering | AWS Route 53 + DNS firewall |
+  | Uptime Kuma | Monitoring and alerting | AWS CloudWatch |
+  | Vaultwarden | Secrets management | AWS Secrets Manager |
+
+  ---
+
+  ## Network Architecture
+
+  Internet
+      │
+      ▼
+  Hetzner Firewall (perimeter — allows xxxx only)
+      │
+      ▼
+  Ubuntu UFW (host firewall — second layer)
+      │
+      ▼
+  Nginx Proxy Manager (reverse proxy — SSL termination)
+      │
+      ▼
+  Docker internal network (services not exposed publicly)
+      │
+      ├── n8n 
+      ├── PostgreSQL 
+      └── Other services 
+
+  **Key principle:** Only some ports are publicly exposed. All internal services communicate over a private Docker network — equivalent to an AWS VPC with private subnets.
+
+  ---
+
+  ## Security Layers (Defense in Depth)
+
+  | Layer | Tool | Purpose |
+  |---|---|---|
+  | 1 — Perimeter | Hetzner Firewall | Block everything except xxxx |
+  | 2 — Host | UFW | OS-level firewall rules |
+  | 3 — Intrusion prevention | Fail2Ban | Auto-ban IPs after failed SSH attempts |
+  | 4 — Threat intelligence | CrowdSec | Community-sourced IP blocklist |
+  | 5 — Private network | Tailscale | Zero Trust access for management |
+  | 6 — Authentication | SSH keys | No password auth — keys only |
+  | 7 — Isolation | Docker networks | Services can't reach each other unless explicitly allowed |
+  | 8 — Vulnerability scanning | Trivy | CVE scanning on Docker images |
+
+  **Zero Trust principle:** No implicit trust based on network location. Every access request is authenticated and authorized explicitly.
+
+  ---
+
+  ## Monitoring and Observability
+
+  - **Uptime Kuma:** Service availability monitoring with Telegram alerts
+  - **Daily security report:** Automated script sends threat summary to Telegram every day at 7AM UTC
+  - **Resource monitoring:** CPU, RAM, disk alerts every 15 minutes
+  - **Weekly log analysis:** Fail2Ban and CrowdSec logs reviewed every Sunday
+
+  ---
+
+  ## Availability and Disaster Recovery
+
+  | Aspect | Current state |
+  |---|---|
+  | Availability zone | Single zone (Helsinki) |
+  | Backup strategy | PostgreSQL pg_dump (planned) |
+  | RTO (Recovery Time Objective) | ~15 min (manual redeploy) |
+  | RPO (Recovery Point Objective) | Last backup |
+  | Known failure mode | Docker network drops after reboot — manual fix required |
+  | Hetzner backup | Active|
+
+  **Improvement opportunity:** Multi-region redundancy would require a second VM in a different region (e.g., Hetzner Nuremberg) with database replication — equivalent to AWS Multi-AZ RDS.
+
+  ---
+
+  ## Cost Comparison: Self-hosted vs AWS equivalent
+
+  | Service | Self-hosted (Hetzner) | AWS equivalent | AWS monthly cost |
+  |---|---|---|---|
+  | VM (2 vCPU, 4GB) | Included | EC2 t3.medium | ~AUD 45 |
+  | Database | Included | RDS PostgreSQL t3.micro | ~AUD 25 |
+  | Load balancer | Nginx (free) | ALB | ~AUD 25 |
+  | Monitoring | Uptime Kuma (free) | CloudWatch | ~AUD 10 |
+  | **Total** | **~AUD 7/month** | | **~AUD 105/month** |
+
+  **Insight for sales:** A startup choosing self-hosted IaaS vs managed PaaS (AWS) saves ~93% on infrastructure costs but takes on operational overhead — security patching, monitoring, backups. The
+  value proposition of AWS is **operational simplicity and managed reliability**, not raw compute cost.
+
+  ---
+
+  *This document is part of a cloud fundamentals learning portfolio. Infrastructure is real and production-running.*
+
+  ---
