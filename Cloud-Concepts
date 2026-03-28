@@ -1,0 +1,31 @@
+1. IaaS / PaaS / SaaS
+- IaaS: Infrastructura as a Service. Renting raw compute infrastructure (servers, storage, networking) over the internet. Fully customisable across all layers, but you are responsible for managing the OS, runtime, and keeping everything up to date. Best for teams with technical expertise who need full control. (e.g. AWS EC2, Azure VMs)
+- PaaS:Platform as a Service. The infrastructure and runtime environment are managed for you — you only focus on building and deploying your application. Customisable at the application layer, but the underlying OS and middleware are abstracted away. Best for developers who want to ship code without managing servers. (e.g. Heroku, Google App Engine)
+- SaaS: Software as a service. A ready-to-use software solution delivered over the internet. Minimal customisation — you configure it, not build it. Best when a prebuilt solution fits your needs. (e.g. Salesforce, Slack, Gmail)
+
+2. Shared Responsibility Model
+| Layer | IaaS | PaaS | SaaS |
+| Application | You | You | Provide |
+| Runtime/Middleware | You | Provide | Provider |
+| OS | You | Provide | Provider |
+| Infrastructure | Provide | Provider | Provider |
+Runtime: Execution environment your code needs to run. For instance: If you write an app in Python, you need Python installed 
+Middleware: Software that acts as "glue" between your application and the OS, or between different components. For instance: A web server like Nginx or Apache OR an API gateway 
+
+3. Public / Private / Hybrid cloud
+- Public Cloud: Don't own servers, you rent them like AWS, GCP (Google Cloud Platform), Azure
+- Private Cloud: You own servers in your premises. Key for compliance as Australia requires to keep data under certain standards and within Australia for certain industries
+- Hybrid Cloud: A mix, when have a portion public (less important data) and Private (more secret data)
+
+4. CapEx vs OpEx
+CapEx: Capital Expediture: it's an upfront investment in long-term assets that depreciate over time. 
+OpEx: Operational Expenditure: Cost of running an operation. These are recurring costs, expensed in the period they occur — no depreciation
+| - | CapEx | OpEx | 
+| Payment | Upfront, Large | Recurrent, Small |
+| Accounting | Depreciated over time | Expensed Inmidiatly |
+| Example | Buy Servers | VPS Hetzner |
+| Flexibility | Low (Buy for highest peak of usage) | High (Pay as you need) |
+
+5. Regiones y Availability Zones
+Regiones: A specific geographic area (e.g. Australia East, US East) where a cloud provider has infrastructure. Chosen based on latency, compliance, and data sovereignty requirements.
+Availability Zones:  One or more independent data centres within a region, each with separate power, cooling and networking. Designed so that a failure in one AZ doesn't affect the others.
