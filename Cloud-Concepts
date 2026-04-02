@@ -29,3 +29,36 @@ OpEx: Operational Expenditure: Cost of running an operation. These are recurring
 5. Regiones y Availability Zones
 Regiones: A specific geographic area (e.g. Australia East, US East) where a cloud provider has infrastructure. Chosen based on latency, compliance, and data sovereignty requirements.
 Availability Zones:  One or more independent data centres within a region, each with separate power, cooling and networking. Designed so that a failure in one AZ doesn't affect the others.
+
+6. AWS Vs Azure Vs GCP
+AWS Pros: Largest in market, with more solutions than any other, better documentation, mature 
+AWS Cons: Harder to learn due to the amount of solutions and expensive if not matching solutions and issues.
+Azure Pros: Native Microsoft integration, Open AI GPT-4 in your own Azure tenant - your data not goint to internet keep it safe and private. Leading in Gob, education and traditional enterprise
+Azure Cons: Not great for start-ups and tech businesses, slow launching new products, weak out of Microsoft
+GCP Pros: Best stack when the problem is data + AI together. BigQuery (Process and analyze data) --> AI Training --> Vertex AI (Build and train models) --> Gemini (LLM queries), better price 
+GCP Cons: Smaller presence, less products
+
+7.containers and orchestration
+VM:  It's a computer living in a cloud, with own OS and kernel (software that talkd directly with hardware)
+Container: A container virtualizes only the execution environment — it shares the host's kernel but has its own filesystem (directory structure independt and hidden from other container), environment variables (Each container has its own set. That's how your docker-compose.yml passes the database password to n8n without writing it inside the app itself.), and network (By default a container can't talk to other containers or to the internet unless you explicitly allow it). Much lighter than a VM.
+Volume: A folder on the host (VPS) mounted inside a container. Data persists independently of the container being erase.
+Secrets: A mechanism to securely deliver sensitive values (passwords, API keys, encryption keys) to an application at runtime — without storing them in plain text in config files.
+Image: Template, read-only. Once this is set with a specific configuration and data is called a Container
+  Registry  (Docker Hub) : Server with all repositories (Docker Hub / AWS ECR)
+      └── Repository  (n8nio/n8n): The collection of all versions of an image
+              └── Image/Tags/versions  (n8nio/n8n:latest, n8nio/n8n:1.0.0): an specific version of the repository
+Docker Compose: Your /opt/n8n/docker-compose.yml file defines your entire stack: n8n, PostgreSQL, volumes, networks, and environment variables — all in a single file.
+Docker Compose is a file that defines your entire stack — images, configuration, volumes, networks, and dependencies — so you can spin up or recreate your environment with a single command.
+  └──  docker compose up -d
+ docker-compose.yml
+      ├── Which images to use (and which version)
+      ├── How to configure each container (environment variables)
+      ├── Which volumes to mount (where data persists)
+      ├── How they communicate with each other (networks)
+      └── In which order they start (dependencies)
+CI/CD : Continious Integration / Continious Delivery/Deployment
+  Code commit
+      ↓
+  CI: test → build image → validate
+      ↓
+  CD: push to registry → deploy to production
