@@ -1,8 +1,13 @@
 TCP/IP
-  IP: Protocol, IP (Internet Protocol)  for routing a package from one address to other
+  IP: Protocol, IP (Internet Protocol)  for routing a package from one address to other. Is Best Effort, not ensuring anything is arriving, just sending it.
   TCP: Transmission Control Protocol, Ensures all data arrives to destiny in good shape.
-  - Split data into segments (packages) and numbered
+  - Split data into segments (packet) and numbered
   - Stablished the connection between sender and receiver before starting (three-way handshake)
   - validates each package arrvies
   - Request a resend if something is missing
-  - Assamble everything in the destinatary using the package numbers
+  - Assamble everything in the destinatary using the packet numbers
+  IP Address: Machine address, can be 
+  -IPv4: 192.168.0.1 - 4 sets of digits, limited amount so need to be shared with others
+     - Requires NAT: Network Address Translation. multiple devices using a shared IP. Imagine you receive a package in real world with your appartment building address without the appartment number, the concierge now you bought something in Amazon so will let it in your mailbox even if the appartment number wasnt there
+  -IPv6: 8 sets of 4 characters each, enough for everyone to have unique IPv6 for any device
+  UDP: Fire and forget, use IP and port to knwo where to send the packet but is not verifying if is landing. Good for streaming voiceIP, when speed is more important that get it all perfect
