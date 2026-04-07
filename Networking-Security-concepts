@@ -1,1 +1,8 @@
-
+TCP/IP
+  IP: Protocol, IP (Internet Protocol)  for routing a package from one address to other
+  TCP: Transmission Control Protocol, Ensures all data arrives to destiny in good shape.
+  - Split data into segments (packages) and numbered
+  - Stablished the connection between sender and receiver before starting (three-way handshake)
+  - validates each package arrvies
+  - Request a resend if something is missing
+  - Assamble everything in the destinatary using the package numbers
