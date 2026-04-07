@@ -23,3 +23,20 @@ TCP/IP; Port; DNS
      - Registered ports (1024-49151): Known applications — PostgreSQL (5432), n8n (5678)
      - Dynamic/Ephemeral ports (49152-65535): Temporary ports assigned by the OS for outgoing connections
    Security: Firewalls operate at port level — allowing or blocking packets based on port number (e.g. allow 443, deny 5432)
+ DNS
+   DNS - Domain Name System
+    DNS translates domain names into IP addresses so humans don't need to memorize numbers.
+    How a DNS query works:
+    - Browser checks local cache first — if resolved recently, uses that result
+    - If not cached, asks the DNS Resolver (ISP or Pi-hole)
+    - Resolver asks a Root Server — knows which server handles each TLD (.com, .org, .io)
+    - Root points to the TLD Server — knows which server is authoritative for the domain
+    - TLD points to the Authoritative Server — has the actual record (e.g. andresailab.duckdns.org = 157.180.77.107)
+    - Result is returned and cached for future queries
+    DNS Hierarchy:
+      .                          ← Root (13 servers)
+      ├── .com  .org  .io  .au   ← TLD (Top Level Domain)
+      │       └── duckdns.org    ← Registered Domain
+      │               └── andresailab.duckdns.org  ← Subdomain
+    TTL (Time To Live): how long resolvers cache a DNS result before asking again. Low TTL = faster propagation of IP changes.
+    Business language: DNS is the phonebook of the internet. It's a distributed hierarchy where each level knows its part. Without DNS, internet as we know it doesn't exist. In my infrastructure, I use Pi-hole as a local DNS resolver to block ads and trackers at network level, and DuckDNS as Dynamic DNS so my domain always points to my VPS regardless of IP changes.
