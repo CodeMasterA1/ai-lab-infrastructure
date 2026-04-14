@@ -40,3 +40,49 @@ TCP/IP; Port; DNS
       │               └── andresailab.duckdns.org  ← Subdomain
     TTL (Time To Live): how long resolvers cache a DNS result before asking again. Low TTL = faster propagation of IP changes.
     Business language: DNS is the phonebook of the internet. It's a distributed hierarchy where each level knows its part. Without DNS, internet as we know it doesn't exist. In my infrastructure, I use Pi-hole as a local DNS resolver to block ads and trackers at network level, and DuckDNS as Dynamic DNS so my domain always points to my VPS regardless of IP changes.
+
+Firewall
+  A firewall inspects network traffic — incoming and outgoing — and decides: allow or block, based on rules you define.
+                                                                                                                                                                                                                                                                      
+  Rules are evaluated top-to-bottom. The first rule that matches wins.                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                      
+  A basic rule looks like this:                                                                                                                                                                                                                                       
+  Allow TCP port 443 from anywhere          
+  Allow TCP port 51822 from anywhere  ← your SSH                                                                                                                                                                                                                      
+  Deny everything else                          
+                                                                                                                                                                                                                                                                      
+  That's literally the Hetzner Firewall. Three entry points. Everything else is a wall.
+  
+Two types of firewalls                                                                                                                                                                                                                                              
+                                            
+  Network firewall (Layer 3/4 — IP + port level)
+  - Operates on IP addresses and ports                                                                                                                                                                                                                                
+  - "Allow traffic from IP 1.2.3.4 on port 443"
+  - Fast, simple, no deep inspection                                                                                                                                                                                                                                  
+  - Your Hetzner Firewall and UFW are both this type                                                                                                                                                                                                                  
+                                                    
+  Application firewall / WAF — Web Application Firewall (Layer 7 — HTTP level)                                                                                                                                                                                        
+  - Understands what's inside the packet, not just who sent it                                                                                                                                                                                                        
+  - Blocks SQL injection, XSS attacks, bad HTTP requests                                                                                                                                                                                                              
+  - "Block any request with ' OR 1=1 in the query string"                                                                                                                                                                                                             
+  - Your Nginx can act as a basic Layer 7 filter                                                                                                                                                                                                                      
+  - Enterprise: Cloudflare WAF, AWS WAF, Palo Alto
+
+Stateful vs stateless                     
+Stateless firewall: Evaluates each packet independently. No memory. Simpler, faster.                                                                                                                                                                                                                                                                   
+Stateful firewall: Tracks connections. It knows "this packet is part of a conversation that was legitimately started on port 443 — allow the response even if it comes from a different port."  
+
+My security
+My current setup uses Nginx as a reverse proxy with SSL termination — it handles routing and basic rate limiting but doesn't inspect request content. A full WAF adds signature-based detection (OWASP rules), bot mitigation, and virtual patching. For enterprise production workloads, that's typically Cloudflare WAF or AWS WAF sitting in front of the origin.
+
+The TLS Handshake                                                                                                                                                                                                                                                    
+  Think of it like meeting someone in a spy movie. Before you exchange secrets, you need to:
+  1. Confirm they are who they say they are                                                                                                                                                                                                                           
+  2. Agree on a secret code only the two of you know 
+ Two types of cryptography at play:                                                                                                                                                                                                                                  
+  - Asymmetric (slow, used only during handshake) — public/private key pair. What's encrypted with the public key can only be decrypted with the private key.
+  - Symmetric (fast, used for all data after) — both sides use the same session key they agreed on during the handshake.     
+Certificates — the identity piece                                                                                                                                                                                                                                            
+  A certificate is a digital document that says: "This server at andresailab.duckdns.org is who it claims to be — signed by a trusted authority."  Let's Encrypt is a free Certificate Authority (CA) that automated the whole process.
+My TLS protocol
+All services are served over TLS 1.3 with certificates issued by Let's Encrypt and automatically renewed by the reverse proxy. The TLS layer handles both encryption in transit and server identity verification. Internal container communication runs over HTTP within the private Docker network — traffic never leaves the host unencrypted
