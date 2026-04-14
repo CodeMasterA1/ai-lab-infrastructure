@@ -86,3 +86,69 @@ Certificates — the identity piece
   A certificate is a digital document that says: "This server at andresailab.duckdns.org is who it claims to be — signed by a trusted authority."  Let's Encrypt is a free Certificate Authority (CA) that automated the whole process.
 My TLS protocol
 All services are served over TLS 1.3 with certificates issued by Let's Encrypt and automatically renewed by the reverse proxy. The TLS layer handles both encryption in transit and server identity verification. Internal container communication runs over HTTP within the private Docker network — traffic never leaves the host unencrypted
+
+VPN/Zero Trust
+  Traditional VPN:  Authenticate once at the perimeter → trusted everywhere                                                                                                                                                                                               
+  Zero Trust:   Authenticate every request → access only what you're explicitly allowed                                                                                                                                                                               
+                                                                                                                                                                                                                                                                      
+  Three pillars of Zero Trust:                                                                                                                                                                                                                                        
+  1. Verify identity — who are you? (device + user)                                                                                                                                                                                                                   
+  2. Verify device — is this a known, healthy device?                                                                                                                                                                                                                 
+  3. Least privilege — grant access only to what's needed, nothing more
+
+My Zero trust
+All services are served over TLS 1.3 with certificates issued by Let's Encrypt and automatically renewed by the reverse proxy. The TLS layer handles both encryption in transit and server identity verification. Internal container communication runs over HTTP within the private Docker network — traffic never leaves the host unencrypted.
+
+API keys vs OAuth2 vs JWT
+API Keys: A static secret string. You have it → you get access. That's it.
+  The good: Simple. One string. Works everywhere.                                                                                                                                                                                                                     
+                                            
+  The bad:                                                                                                                                                                                                                                                            
+  - No expiry by default — if it leaks, it's valid forever until manually revoked
+  - No identity — the server knows a key, not who's using it                                                                                                                                                                                                          
+  - Full access — usually all-or-nothing, no granular permissions
+  - You have to store it somewhere (env vars, n8n credentials store)                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                                      
+  Best for: Server-to-server calls, internal tools, simple integrations where the key never leaves your control. 
+
+OAuth2: Limited, scoped, temporary access.
+  The good:
+  - Your password never leaves Google                                                                                                                                                                                                                                 
+  - Token expires (usually 1 hour) — auto-refreshed via refresh token
+  - Scoped — n8n can only do what you approved (read email, not delete your Drive)
+  - Revocable — you can remove n8n's access from Google settings anytime                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                      
+  The bad: Complex to implement. Requires a redirect flow. Overkill for server-to-server.                                                                                                                                                                             
+                                                                                                                                                                                                                                                                      
+  Best for: Any time a user delegates access to a third-party app (Google, GitHub, Notion integrations).
+
+JWT: JSON Web Token. It's a self-contained token that carries information inside it.
+  The key insight: The server doesn't need to look up the database to validate a JWT. It just verifies the signature with its secret key. If the signature checks out → the data inside is trustworthy.
+  The good:                                 
+  - Stateless — no database lookup per request. Scales horizontally.                                                                                                                                                                                                  
+  - Self-contained — carries user info, roles, expiry inside the token                                                                                                                                                                                                
+  - Works across services — any service with the same secret key can validate it
+                                                                                                                                                                                                                                                                      
+  The bad:                                                                                                                                                                                                                                                            
+  - Can't be invalidated before expiry (short expiry + refresh token pattern needed)
+  - If stolen, valid until it expires                                                                                                                                                                                                                                 
+  - Payload is Base64 encoded, not encrypted — don't put sensitive data in it
+                                                                                                                                                                                                                                                                      
+  Best for: Authentication between microservices, stateless APIs, single sign-on.  
+
+SIEM, EDR, XDR
+  SIEM: Security Information and Event Management 
+    A SIEM collects logs from every system in your environment — firewalls, servers, applications, endpoints, cloud services — normalizes them into a common format, correlates events across sources, and fires alerts when patterns match known attack signatures.
+    Enterprise tools: Splunk, IBM QRadar, Microsoft Sentinel, Elastic SIEM  
+  EDR: Endpoint Detection and Response
+    An endpoint is any device — laptop, server, VM. EDR installs a lightweight agent on the machine that monitors everything happening at the OS level: process execution, file changes, network connections, memory activity.
+    Enterprise tools: CrowdStrike Falcon, Microsoft Defender for Endpoint, SentinelOne 
+  XDR: Extended Detection and Response
+    XDR extends EDR by correlating data across:                                                                                                                                                                                                                         
+    - Endpoints (EDR)                         
+    - Network traffic                                                                                                                                                                                                                                                   
+    - Cloud workloads
+    - Email                                                                                                                                                                                                                                                             
+    - Identity (Active Directory, SSO) 
+    XDR doesn't just alert — it can automatically respond: isolate the infected machine, block the IP, revoke the user's credentials.
+   Enterprise tools: CrowdStrike Falcon (also does XDR), Palo Alto Cortex XDR, Microsoft Defender XDR
