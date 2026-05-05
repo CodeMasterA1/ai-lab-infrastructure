@@ -1,1 +1,8 @@
 iPaaS: Integration Platform as a Service. A centralized platform where you define integration flows visually (or with code), and it takes care of connecting everything. n8n
+API-first: A design philosophy where the API is built and defined before any UI or client — the API is the product, not an afterthought.
+Design first, code second: You write the contract first (what endpoints exist, what they accept, what they return) using a spec like OpenAPI — like architectural blueprints before laying bricks.
+Single access point: Every client — web, mobile, Telegram bot, n8n workflow — talks to the same API. No direct DB access, no shortcuts, no special treatment for any consumer.
+Versioned contract: Changes don’t break existing consumers. 
+OpenAPI: A standardized specification format for describing a REST API — written as a .yaml or .json file that defines exactly what endpoints exist, what HTTP methods they use, what parameters they accept, what they return, and what errors they can throw.
+OpenAPI: Why it matters: That structured file is machine-readable — meaning you can auto-generate interactive docs, client SDKs, tests, and even MCP servers directly from it, without writing any of that by hand.​​​​​​​​​​​​​​​​
+MCP (Model Context Protocol): A standardized protocol that exposes a system’s capabilities as a structured list of tools — each with a description that tells an AI agent what it does, when to use it, and how to call it, so the agent can decide autonomously which tool to invoke based on context. or in simple words: an API + Skill.md
