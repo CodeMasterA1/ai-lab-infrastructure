@@ -6,3 +6,15 @@ Versioned contract: Changes don’t break existing consumers.
 OpenAPI: A standardized specification format for describing a REST API — written as a .yaml or .json file that defines exactly what endpoints exist, what HTTP methods they use, what parameters they accept, what they return, and what errors they can throw.
 OpenAPI: Why it matters: That structured file is machine-readable — meaning you can auto-generate interactive docs, client SDKs, tests, and even MCP servers directly from it, without writing any of that by hand.​​​​​​​​​​​​​​​​
 MCP (Model Context Protocol): A standardized protocol that exposes a system’s capabilities as a structured list of tools — each with a description that tells an AI agent what it does, when to use it, and how to call it, so the agent can decide autonomously which tool to invoke based on context. or in simple words: an API + Skill.md
+Polling: Your system repeatedly asks an external service “did anything change?” on a fixed schedule
+ like walking to the door every 10 minutes to check if your package arrived.
+ A Cron, an n8n Schedule trigger hitting an API every hour to check for new records, whether anything happened or not.
+Webhook: The external system calls you the moment something happens
+ like a doorbell, you only react when it rings.
+ Telegram instantly hitting your n8n Webhook node the second a user sends a message, with zero delay and zero wasted requests in between.​​​​​​​​​​​​​​​​
+ETL (Extract, Transform, Load): You pull data from a source, clean and transform it first, then load it ready-to-use into the destination
+ like a chef doing full mise en place in the kitchen before the plate ever reaches the table.
+ELT (Extract, Load, Transform): You pull everything raw into the destination first, then transform it there using the warehouse’s own compute power
+ like a KBBQ, load the ingredients directly onto the table, cook them there.
+Why ELT won: Modern data warehouses like Snowflake and BigQuery are massively parallel and cheap to run — so transforming inside the destination became faster and more flexible than pre-processing. Plus you always keep the raw data, meaning if your transformation logic was wrong, you can fix the query and reprocess without ever losing the original source.​​​​​​​​​​​​​​​​
+
