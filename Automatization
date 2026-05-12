@@ -17,4 +17,13 @@ ETL (Extract, Transform, Load): You pull data from a source, clean and transform
 ELT (Extract, Load, Transform): You pull everything raw into the destination first, then transform it there using the warehouse’s own compute power
  like a KBBQ, load the ingredients directly onto the table, cook them there.
 Why ELT won: Modern data warehouses like Snowflake and BigQuery are massively parallel and cheap to run — so transforming inside the destination became faster and more flexible than pre-processing. Plus you always keep the raw data, meaning if your transformation logic was wrong, you can fix the query and reprocess without ever losing the original source.​​​​​​​​​​​​​​​​
+Event-driven architecture: Systems communicate by producing and consuming events, not by calling each other directly.
+ Like a radio broadcast — the station transmits once, every radio that’s tuned in reacts independently.
+ Producer: The system that generates and publishes the event, with no knowledge of who’s listening.
+ Event broker: The intermediary that receives, stores, and distributes events between producers and consumers. keep the message till the listene is ready
+ Consumer: The system that listens for specific events and reacts to them independently.
+ Decoupling: Producers and consumers don’t know about each other — they only know about the event.
+ Pub/Sub: One event, multiple consumers receive it simultaneously.
+ Message Queue: One event, only one consumer processes it, then it’s gone.
+ Event Streaming: Events are stored in order and consumers can read from any point in time.
 
