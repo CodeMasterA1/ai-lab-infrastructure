@@ -26,4 +26,12 @@ Event-driven architecture: Systems communicate by producing and consuming events
  Pub/Sub: One event, multiple consumers receive it simultaneously.
  Message Queue: One event, only one consumer processes it, then it’s gone.
  Event Streaming: Events are stored in order and consumers can read from any point in time.
+Error handling: What the system does when something goes wrong — retries, fallbacks, dead letter queues, circuit breakers.
+ Retry with backoff: The step failed — try again, but wait before retrying, and wait a little longer each time until you either succeed or give up.
+ Dead Letter Queue (DLQ): Events that failed after all retries go to a separate queue — they’re not lost, just parked there for manual review or reprocessing when the problem is fixed.
+ Circuit Breaker: If a service keeps failing, you stop calling it temporarily to let it recover — like an electrical breaker cutting power before the whole circuit burns out.​​​​​​​​​​​​​​​​
+Observability: How well you can see what’s happening inside the system 
+ Logs: A timestamped record of everything that happened inside a workflow — what ran, in what order, with what data, and what error was thrown if it failed.
+ Metrics: Aggregated numbers over time — how many workflows ran, how many failed, how long they took on average — the dashboard view that shows patterns without showing every individual event.​​​​​​​​​​​​​​​​
+ Traces: End-to-end tracking of a single execution across multiple systems — following one specific request from the moment it enters until it completes or fails, no matter how many services it touched along the way.​​​​​​​​​​​​​​​​
 
